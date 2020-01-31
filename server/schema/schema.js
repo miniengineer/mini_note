@@ -18,7 +18,7 @@ const NoteType = new GraphQLObjectType({
     id: { type: GraphQLString },
     user_id: { type: GraphQLString },
     title: { type: GraphQLString },
-    text: { type: GraphQLString },
+    body: { type: GraphQLString },
     created_at: { type: GraphQLString },
     updated_at: { type: GraphQLString }
   })
