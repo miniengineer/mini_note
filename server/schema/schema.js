@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 
-const { GraphQLObjectType, GraphQLString } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema } = graphql;
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -22,4 +22,22 @@ const NoteType = new GraphQLObjectType({
     created_at: { type: GraphQLString },
     updated_at: { type: GraphQLString }
   })
+});
+
+const RootQuery = new GraphQLObjectType({
+  name: 'RootQueryType',
+  fields: {
+    note: {
+      type: NoteType,
+      args: { user_id: { type: GraphQLString } },
+      resolve(parent, args){
+        //code to get data from db
+        args.user_id
+      }
+    }
+  }
+});
+
+module.exports = new GraphQLSchema({
+  query: RootQuery
 });
