@@ -10,7 +10,8 @@ const app = express();
 //if API request is made to the following enpoint
 //the handling will be passed onto graphqlHTTP
 app.use('/graphql', graphqlHTTP({
-  schema
+  schema,
+  graphiql: true
 }));
 
 app.listen(4000, () => {
