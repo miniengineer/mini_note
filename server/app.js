@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
 
+let notes = [];
+
 //graphql middleware
 //if API request is made to the following enpoint
 //the handling will be passed onto graphqlHTTP
@@ -39,14 +41,19 @@ app.use('/graphql', graphqlHttp({
   `),
   rootValue: {
     notes: () => {
-      return [
-        { id: '1', user_id: '1', title: 'New Note', body: 'I am a new note', created_at: '19/01/2019', updated_at: '' },
-        { id: '2', user_id: '2', title: 'Steak recipe', body: 'I am a  steak recipe', created_at: '19/01/2019', updated_at: '' }
-      ];
+      return notes;
     },
     createNote: (args) => {
-      const { user_id, title, body } = args;
-      return { user_id, title, body };
+      const { noteInput } = args;
+      const note = {
+        id: Math.random().toString(),
+        title: noteInput.title,
+        body: noteInput.body || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      notes.push(note);
+      return note;
     }
   },
   graphiql: true
