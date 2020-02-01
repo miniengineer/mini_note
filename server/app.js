@@ -2,7 +2,7 @@ const express = require('express');
 
 //express-graphql module allows express to understand graphql queries
 const graphqlHTTP = require('express-graphql');
-const schema = require('./schema/schema');
+const schema = require('./schema');
 
 const app = express();
 
