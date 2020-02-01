@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
 
-let notes = [];
+const { createNote, notesByUserId } = require('./controllers/notes');
 
 //graphql middleware
 //if API request is made to the following enpoint
@@ -22,12 +22,13 @@ app.use('/graphql', graphqlHttp({
     }
 
     input NoteInput {
+      user_id: String!
       title: String!
       body: String
     }
 
     type RootQuery {
-      notes: [Note!]!
+      notes(user_id: ID!): [Note!]!
     }
 
     type RootMutation {
@@ -40,20 +41,18 @@ app.use('/graphql', graphqlHttp({
     }
   `),
   rootValue: {
-    notes: () => {
-      return notes;
+    notes: (args) => {
+      return notesByUserId(args.user_id);
     },
-    createNote: (args) => {
+    createNote: async (args) => {
       const { noteInput } = args;
       const note = {
-        id: Math.random().toString(),
+        user_id: noteInput.user_id,
         title: noteInput.title,
-        body: noteInput.body || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        body: noteInput.body || ''
       };
-      notes.push(note);
-      return note;
+      const newNote = await createNote(note);
+      return newNote[0];
     }
   },
   graphiql: true
