@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
 
-const { createNote, notesByUserId } = require('./controllers/notes');
+const { addNote, notesByUserId } = require('./controllers/notes');
 
 //graphql middleware
 //if API request is made to the following enpoint
@@ -44,19 +44,12 @@ app.use('/graphql', graphqlHttp({
     notes: (args) => {
       return notesByUserId(args.user_id);
     },
-    createNote: async (args) => {
-      const { noteInput } = args;
-      let newNote;
-      try {
-        newNote = await createNote({
-          user_id: noteInput.user_id,
-          title: noteInput.title,
-          body: noteInput.body || ''
-        });
-      } catch(err) {
-        console.error(err);
-      }
-      return newNote[0];
+    createNote: (args) => {
+      return addNote({
+        user_id: args.noteInput.user_id,
+        title: args.noteInput.title,
+        body: args.noteInput.body || ''
+      });
     }
   },
   graphiql: true
