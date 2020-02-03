@@ -8,6 +8,8 @@ const { buildSchema } = require('graphql');
 
 const { addNote, notesByUserId } = require('./controllers/notes');
 
+app.use(bodyParser.json());
+
 //graphql middleware
 //if API request is made to the following enpoint
 //the handling will be passed onto graphqlHTTP
@@ -42,20 +44,27 @@ app.use('/graphql', graphqlHttp({
   `),
   rootValue: {
     notes: (args) => {
-      return notesByUserId(args.user_id);
+      try {
+        return notesByUserId(args.user_id);
+      } catch(err) {
+        console.error(err);
+      }
     },
     createNote: (args) => {
-      return addNote({
-        user_id: args.noteInput.user_id,
-        title: args.noteInput.title,
-        body: args.noteInput.body || ''
-      });
+      try {
+        return addNote({
+          user_id: args.noteInput.user_id,
+          title: args.noteInput.title,
+          body: args.noteInput.body || ''
+        });
+      } catch(err) {
+        console.error(err);
+      }
     }
   },
   graphiql: true
 }));
 
-app.use(bodyParser.json());
 
 app.listen(4000, () => {
   console.log('App listening on port 4000');
