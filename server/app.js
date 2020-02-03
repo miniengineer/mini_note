@@ -46,12 +46,11 @@ app.use('/graphql', graphqlHttp({
     },
     createNote: async (args) => {
       const { noteInput } = args;
-      const note = {
+      const newNote = await createNote({
         user_id: noteInput.user_id,
         title: noteInput.title,
         body: noteInput.body || ''
-      };
-      const newNote = await createNote(note);
+      });
       return newNote[0];
     }
   },
