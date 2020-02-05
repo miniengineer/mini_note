@@ -2,22 +2,30 @@ const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
 const database = require('knex')(configuration);
 
-const addNote = (note) => {
-  return database('notes').insert({
-    title: note.title,
-    body: note.body,
-    user_id: note.user_id
-  }, ['id', 'title', 'body', 'created_at', 'updated_at'])
-    .then(noteArr => noteArr[0])
-    .catch(err => console.error(err));
+const addNote = async (note) => {
+  let noteArr;
+  try {
+    noteArr= await database('notes').insert({
+      title: note.title,
+      body: note.body,
+      user_id: note.user_id
+    }, ['id', 'title', 'body', 'created_at', 'updated_at']);
+  } catch(err) {
+    console.error(err);
+  }
+  return noteArr[0];
 };
 
-const notesByUserId = (user_id) => {
-  return database('notes').select().where({
-    user_id
-  })
-    .then(result => result)
-    .catch(err => console.error(err));
+const notesByUserId = async (user_id) => {
+    let notes;
+    try {
+      notes = await database('notes').select().where({
+        user_id
+      });
+    } catch(err) {
+      console.error(err);
+    }
+    return notes;
 };
 
 module.exports = {
