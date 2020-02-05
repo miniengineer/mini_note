@@ -1,12 +1,35 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 //express-graphql module allows express to understand graphql queries
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
 
-const { addNote, notesByUserId } = require('./controllers/notes');
+const {
+  addNote,
+  notesByUserId
+} = require('./controllers/notes');
+
+const { addUser } = require('./controllers/user');
+
+const hashPassword = (password) => {
+  return new Promise((resolve, reject) =>
+    bcrypt.hash(password, 10, (err, hash) => {
+      return err ? reject(err) : resolve(hash);
+    })
+  );
+};
+
+const createToken = () => {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(16, (err, data) => {
+      err ? reject(err) : resolve(data.toString('base64'));
+    })
+  });
+};
 
 app.use(bodyParser.json());
 
@@ -29,12 +52,26 @@ app.use('/graphql', graphqlHttp({
       body: String
     }
 
+    type User {
+      id: ID!
+      username: String!
+      password_digest: String
+      token: String!
+      created_at: String
+    }
+
+    input UserInput {
+      username: String!
+      password: String!
+    }
+
     type RootQuery {
       notes(user_id: ID!): [Note!]!
     }
 
     type RootMutation {
       createNote(noteInput: NoteInput): Note
+      createUser(userInput: UserInput): String
     }
 
     schema {
@@ -56,6 +93,20 @@ app.use('/graphql', graphqlHttp({
           user_id: args.noteInput.user_id,
           title: args.noteInput.title,
           body: args.noteInput.body || ''
+        });
+      } catch(err) {
+        console.error(err);
+      }
+    },
+    createUser: async (args) => {
+      const hashedPassword = await hashPassword(args.userInput.password);
+      const token = await createToken();
+      delete args.userInput.password;
+      try {
+        return addUser({
+          username: args.userInput.username,
+          password_digest: hashedPassword,
+          token: token
         });
       } catch(err) {
         console.error(err);
