@@ -12,8 +12,8 @@ const {
   addNote,
   notesByUserId
 } = require('./controllers/notes');
-
 const { addUser } = require('./controllers/user');
+const { addAttachment } = require('./controllers/attachments');
 
 const hashPassword = (password) => {
   return new Promise((resolve, reject) =>
@@ -66,6 +66,19 @@ app.use('/graphql', graphqlHttp({
       password: String!
     }
 
+    type Attachment {
+      id: ID!
+      url: String!
+      user_id: ID!
+      note_id: ID!
+    }
+
+    input AttachmentInput {
+      url: String!
+      user_id: ID!
+      note_id: ID!
+    }
+
     type RootQuery {
       notes(user_id: ID!): [Note!]!
     }
@@ -73,6 +86,7 @@ app.use('/graphql', graphqlHttp({
     type RootMutation {
       createNote(noteInput: NoteInput): Note
       createUser(userInput: UserInput): String
+      createAttachment(attachmentInput: AttachmentInput): ID
     }
 
     schema {
@@ -110,6 +124,18 @@ app.use('/graphql', graphqlHttp({
           token: token
         });
       } catch(err) {
+        console.error(err);
+      }
+    },
+    createAttachment: (args) => {
+      console.log( args.attachmentInput.user_id );
+      try {
+        return addAttachment({
+          url: args.attachmentInput.url,
+          user_id: args.attachmentInput.user_id,
+          note_id: args.attachmentInput.note_id
+        });
+      } catch (err) {
         console.error(err);
       }
     }
