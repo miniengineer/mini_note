@@ -1,7 +1,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable('attachments', (table) => {
     table.increments().notNullable(); //attachment id
-    table.string('url').unique().notNullable();
+    table.string('url').notNullable();
     table.integer('user_id').unsigned().notNullable();
     table.foreign('user_id').references('id').inTable('users');
     table.integer('note_id').unsigned().notNullable();

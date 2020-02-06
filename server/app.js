@@ -128,7 +128,6 @@ app.use('/graphql', graphqlHttp({
       }
     },
     createAttachment: (args) => {
-      console.log( args.attachmentInput.user_id );
       try {
         return addAttachment({
           url: args.attachmentInput.url,
