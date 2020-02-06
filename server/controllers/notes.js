@@ -5,7 +5,7 @@ const database = require('knex')(configuration);
 const addNote = async (note) => {
   let noteArr;
   try {
-    noteArr= await database('notes').insert({
+    noteArr = await database('notes').insert({
       title: note.title,
       body: note.body,
       user_id: note.user_id
