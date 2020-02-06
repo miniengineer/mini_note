@@ -12,6 +12,8 @@ const addUser = async (user) => {
       created_at: new Date()
     }, ['username', 'password_digest', 'token']);
   } catch(err) {
+    //TODO
+    //send error message to frontend
     console.error(err);
   }
   return newUser[0].token;
