@@ -44,6 +44,7 @@ app.use('/graphql', graphqlHttp({
       body: String
       created_at: String
       updated_at: String
+      user_id: String!
     }
 
     input NoteInput {
