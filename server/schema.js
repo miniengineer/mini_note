@@ -1,16 +1,30 @@
 const graphql = require('graphql');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLID,
-    GraphQLList
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLID,
+  GraphQLList
 } = graphql;
+
+//controllers
+const Note = require('./controllers/notes');
+const User = require('./controllers/user');
+
+const checkPassword = (password, hash) => {
+  return new Promise((resolve, reject) =>
+    bcrypt.compare(password, hash, (err, res) => {
+      return err ? reject(err) : resolve(res);
+    })
+  );
+};
 
 const UserType = new GraphQLObjectType({
   name: 'User',
-    fields: ( ) => ({
+    fields: () => ({
       id: { type: GraphQLID },
       username: { type: GraphQLString },
       password: { type: GraphQLString },
@@ -19,7 +33,7 @@ const UserType = new GraphQLObjectType({
         type: new GraphQLList(NotesType),
         resolve(parent, args){
           console.log({parent, args});
-          return _.find(notes, { user_id: parent.id });
+          return Note.findByUserId(parent.id);
         }
       }
     })
@@ -27,7 +41,7 @@ const UserType = new GraphQLObjectType({
 
 const NoteType = new GraphQLObjectType({
   name: 'Note',
-  fields: ( ) => ({
+  fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     body: { type: GraphQLString },
@@ -52,3 +66,35 @@ const AttachmentType = new GraphQLObjectType({
   })
 });
 
+const RootQuery = new GraphQLObjectType({
+  name: 'RootQueryType',
+  fields: {
+    login: {
+      type: GraphQLString,
+      args: {
+        username: { type: GraphQLString },
+        password: { type: GraphQLString }
+      },
+      async resolve(parent, args) {
+        const user = await User.findByUsername(args.username);
+
+        if (!user) {
+          throw new Error('Not a valid user!');
+        }
+
+        const loginResult = await checkPassword(args.password, user.password_digest);
+        if (!loginResult) {
+          throw new Error('Unauthorized!');
+        }
+
+        user.token = await User.addToken(user.id);
+
+        return user.token;
+      }
+    }
+  }
+});
+
+module.exports = new GraphQLSchema({
+  query: RootQuery
+});

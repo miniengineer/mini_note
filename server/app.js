@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const schema = require('./schema');
 
 //express-graphql module allows express to understand graphql queries
 const graphqlHttp = require('express-graphql');
@@ -12,7 +13,6 @@ app.use(bodyParser.json());
 //the handling will be passed onto graphqlHTTP
 app.use('/graphql', graphqlHttp({
   schema,
-  rootValue,
   graphiql: true
 }));
 
