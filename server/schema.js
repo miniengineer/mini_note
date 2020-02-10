@@ -45,7 +45,7 @@ const NoteType = new GraphQLObjectType({
 
 const AttachmentType = new GraphQLObjectType({
   name: 'Attachment',
-  fields: ( ) => ({
+  fields: () => ({
     id: { type: GraphQLID },
     url: { type: GraphQLString },
     created_at: { type: GraphQLString }
