@@ -17,15 +17,15 @@ const addNote = async (note) => {
 };
 
 const notesByUserId = async (user_id) => {
-    let notes;
-    try {
-      notes = await database('notes').select().where({
-        user_id
-      });
-    } catch(err) {
-      console.error(err);
-    }
-    return notes;
+  let notes;
+  try {
+    notes = await database('notes').select().where({
+      user_id
+    });
+  } catch(err) {
+    console.error(err);
+  }
+  return notes;
 };
 
 module.exports = {

@@ -14,8 +14,23 @@ const addAttachment = async (attachment) => {
     console.error(err);
   }
   return newAttachment[0].id;
-}
+};
+
+const getAttachments = async (user_id, note_id) => {
+  let attachments;
+  try {
+    attachments = await database('attachments').select().where({
+      user_id: args.user_id,
+      note_id: args.note_id
+    });
+  } catch(err) {
+    console.error(err);
+  }
+  console.log(attachments);
+  return attachments;
+};
 
 module.exports = {
   addAttachment,
+  getAttachments
 }
