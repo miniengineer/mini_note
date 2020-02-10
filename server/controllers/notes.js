@@ -16,7 +16,7 @@ const addNote = async (note) => {
   return noteArr[0];
 };
 
-const notesByUserId = async (user_id) => {
+const findByUserId = async (user_id) => {
   let notes;
   try {
     notes = await database('notes').select().where({
@@ -30,5 +30,5 @@ const notesByUserId = async (user_id) => {
 
 module.exports = {
   addNote,
-  notesByUserId
+  findByUserId
 };
