@@ -92,11 +92,8 @@ const RootQuery = new GraphQLObjectType({
     },
     user: {
       type: UserType,
-      args: {
-        id: { type: GraphQLID }
-      },
-      async resolve(parent, args) {
-        const user = await User.findById(args.id);
+      async resolve(parent, args, { authenticatedUser }) {
+        const user = await User.findById(authenticatedUser.id);
         return user;
       }
     }
