@@ -30,9 +30,8 @@ const UserType = new GraphQLObjectType({
       password: { type: GraphQLString },
       token: { type: GraphQLString },
       notes: {
-        type: new GraphQLList(NotesType),
+        type: new GraphQLList(NoteType),
         resolve(parent, args){
-          console.log({parent, args});
           return Note.findByUserId(parent.id);
         }
       }
@@ -50,7 +49,6 @@ const NoteType = new GraphQLObjectType({
     attachments: {
       type: new GraphQLList(AttachmentType),
       resolve(parent, args){
-        console.log({ parent, args });
         return _.find(attachments, { note_id: parent.id });
       }
     }
@@ -90,6 +88,16 @@ const RootQuery = new GraphQLObjectType({
         user.token = await User.addToken(user.id);
 
         return user.token;
+      }
+    },
+    user: {
+      type: UserType,
+      args: {
+        id: { type: GraphQLID }
+      },
+      async resolve(parent, args) {
+        const user = await User.findById(args.id);
+        return user;
       }
     }
   }

@@ -48,8 +48,20 @@ const addToken = async (id) => {
   return result[0].token;
 };
 
+const findById = async (id) => {
+  let user;
+  try {
+    user = await database('users').select().where({ id });
+  } catch(err) {
+    console.error(err);
+  }
+
+  return user[0];
+}
+
 module.exports = {
   addUser,
   findByUsername,
-  addToken
+  addToken,
+  findById
 };
