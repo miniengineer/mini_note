@@ -82,7 +82,7 @@ const RootQuery = new GraphQLObjectType({
 
         const validUser = await checkPassword(args.password, user.password_digest);
         if (!validUser) {
-          throw new Error('Unauthorized!');
+          throw new Error('Incorrent password');
         }
 
         user.token = await User.addToken(user.id);
