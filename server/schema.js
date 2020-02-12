@@ -100,6 +100,8 @@ const RootQuery = new GraphQLObjectType({
         return user;
       }
     }
+    //TODO
+    //add register query (mutation probably?)
   }
 });
 
