@@ -80,8 +80,8 @@ const RootQuery = new GraphQLObjectType({
           throw new Error('Not a valid user!');
         }
 
-        const loginResult = await checkPassword(args.password, user.password_digest);
-        if (!loginResult) {
+        const validUser = await checkPassword(args.password, user.password_digest);
+        if (!validUser) {
           throw new Error('Unauthorized!');
         }
 
